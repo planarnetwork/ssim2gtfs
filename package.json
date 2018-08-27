@@ -24,12 +24,14 @@
   "license": "GPL-3.0",
   "devDependencies": {
     "@types/archiver": "^2.1.2",
+    "@types/byline": "^4.2.31",
     "@types/node": "^10.9.2",
     "mocha": "^5.2.0",
     "ts-node": "^7.0.1",
     "typescript": "^3.0.1"
   },
   "dependencies": {
-    "archiver": "^3.0.0"
+    "archiver": "^3.0.0",
+    "byline": "^5.0.0"
   }
 }
