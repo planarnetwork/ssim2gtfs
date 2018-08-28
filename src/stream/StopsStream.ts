@@ -1,4 +1,5 @@
 import {Transform, TransformCallback} from "stream";
+import {FlightSchedule} from "./SSIMStream";
 
 /**
  * Extract the stops from the SCR entries
@@ -9,16 +10,21 @@ export class StopsStream extends Transform {
   /**
    * Transform and emit the stop if it hasn't been seen before
    */
-  public _transform(chunk: any, encoding: string, callback: TransformCallback): void {
-    if (this.stopsSeen[chunk]) {
-      callback();
-    }
-    else {
-      this.stopsSeen[chunk] = chunk;
+  public _transform(schedule: FlightSchedule, encoding: string, callback: TransformCallback): void {
+    const stops = this.getStop(schedule.origin) + this.getStop(schedule.destination);
 
-      callback(undefined, chunk);
+    callback(undefined, stops);
+  }
+
+  private getStop(stopId: string): string {
+    if (this.stopsSeen[stopId]) {
+      return "";
     }
-  };
+
+    this.stopsSeen[stopId] = stopId;
+
+    return stopId + "\n";
+  }
 }
 
 interface StopsIndex {
