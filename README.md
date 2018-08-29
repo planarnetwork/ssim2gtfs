@@ -22,6 +22,14 @@ ssim2gtfs -i flights.ssim -o gtfs.zip
 cat flights.ssim | ssim2gtfs > gtfs.zip
 ```
 
+## Notes
+
+The GTFS does not support many of the fields in the SSIM standard so there is a lot of information that is not retained. 
+
+- An extended route type of [1100](https://developers.google.com/transit/gtfs/reference/extended-route-types) (air service) is used
+- All timezones are converted to UTC
+
+
 ## Contributing
 
 Issues and PRs are very welcome. To get the project set up run
