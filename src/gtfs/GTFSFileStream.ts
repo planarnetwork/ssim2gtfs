@@ -1,5 +1,5 @@
 import {Transform, TransformCallback} from "stream";
-import {FlightSchedule} from "./SSIMStream";
+import {FlightSchedule} from "../ssim/SSIMStream";
 
 export abstract class GTFSFileStream extends Transform {
   private headerSent: boolean = false;

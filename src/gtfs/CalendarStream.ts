@@ -1,4 +1,4 @@
-import {FlightSchedule} from "./SSIMStream";
+import {FlightSchedule} from "../ssim/SSIMStream";
 import {GTFSFileStream} from "./GTFSFileStream";
 
 /**
