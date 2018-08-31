@@ -12,13 +12,18 @@ In development, not currently functional.
 ssim2gtfs is a CLI tool that can be installed via NPM:
 
 ```
-# installation
 npm install -g ssim2gtfs
+```
 
-# cli options
-ssim2gtfs -i flights.ssim -o gtfs.zip
+It can be run by specifying the input and output files as CLI arguments:
 
-# unix pipes
+```
+ssim2gtfs flights.ssim gtfs.zip
+```
+
+Or using unix pipes:
+
+```
 cat flights.ssim | ssim2gtfs > gtfs.zip
 ```
 
@@ -28,7 +33,8 @@ The GTFS does not support many of the fields in the SSIM standard so there is a 
 
 - An extended route type of [1100](https://developers.google.com/transit/gtfs/reference/extended-route-types) (air service) is used
 - All timezones are converted to UTC
-
+- Stop data is derived from [ourairports.com](http://ourairports.com/data/)
+- Agency data is derived from [openflights.org/](https://openflights.org/data.html)
 
 ## Contributing
 
