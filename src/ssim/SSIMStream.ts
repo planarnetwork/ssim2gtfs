@@ -1,7 +1,7 @@
 import {Transform, TransformCallback} from "stream";
 
 /**
- * Transform the input text gtfs into a gtfs of FlightSchedules
+ * Transform the input text stream into a stream of FlightSchedules
  */
 export class SSIMStream extends Transform {
 
