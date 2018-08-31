@@ -1,23 +1,16 @@
-import {Transform, TransformCallback} from "stream";
 import {FlightSchedule} from "./SSIMStream";
+import {GTFSFileStream} from "./GTFSFileStream";
 
 /**
  * Extract the agencies from the FlightSchedule objects
  */
-export class AgencyStream extends Transform {
+export class AgencyStream extends GTFSFileStream {
   private agenciesSeen: AgencyIndex = {};
-  private headerSent: boolean = false;
+  protected header = "agency_id,agency_name,agency_url,agency_timezone,agency_phone,agency_lang";
 
-  /**
-   * Transform and emit the agency if it hasn't been seen before
-   */
-  public _transform(schedule: FlightSchedule, encoding: string, callback: TransformCallback): void {
-    const stops = this.getHeader() + this.getAgency(schedule.operator);
+  protected getData(schedule: FlightSchedule): string {
+    const agencyId = schedule.operator;
 
-    callback(undefined, stops);
-  }
-
-  private getAgency(agencyId: string): string {
     if (this.agenciesSeen[agencyId]) {
       return "";
     }
@@ -27,15 +20,6 @@ export class AgencyStream extends Transform {
     return `${agencyId},${agencyId},http://agency.com,Europe/London,,en\n`;
   }
 
-  private getHeader(): string {
-    if (this.headerSent) {
-      return "";
-    }
-
-    this.headerSent = true;
-
-    return "agency_id,agency_name,agency_url,agency_timezone,agency_phone,agency_lang\n";
-  }
 }
 
 interface AgencyIndex {

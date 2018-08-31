@@ -1,20 +1,15 @@
-import {Transform, TransformCallback} from "stream";
 import {FlightSchedule} from "./SSIMStream";
+import {GTFSFileStream} from "./GTFSFileStream";
 
 /**
  * Extract the stops from the FlightSchedule objects
  */
-export class StopsStream extends Transform {
+export class StopsStream extends GTFSFileStream {
   private stopsSeen: StopsIndex = {};
-  private headerSent: boolean = false;
+  protected header = "stop_id,stop_name,stop_desc,stop_lat,stop_lon,stop_url,location_type,parent_station";
 
-  /**
-   * Transform and emit the stop if it hasn't been seen before
-   */
-  public _transform(schedule: FlightSchedule, encoding: string, callback: TransformCallback): void {
-    const stops = this.getHeader() + this.getStop(schedule.origin) + this.getStop(schedule.destination);
-
-    callback(undefined, stops);
+  protected getData(schedule: FlightSchedule): string {
+    return this.getStop(schedule.origin) + this.getStop(schedule.destination);
   }
 
   private getStop(stopId: string): string {
@@ -27,15 +22,6 @@ export class StopsStream extends Transform {
     return `${stopId},,${stopId},0.00,0.00,,,1,,,,\n`;
   }
 
-  private getHeader(): string {
-    if (this.headerSent) {
-      return "";
-    }
-
-    this.headerSent = true;
-
-    return "stop_id,stop_name,stop_desc,stop_lat,stop_lon,stop_url,location_type,parent_station\n";
-  }
 }
 
 interface StopsIndex {

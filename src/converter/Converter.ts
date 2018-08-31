@@ -6,6 +6,8 @@ import {Archiver} from "archiver";
 import {AgencyStream} from "../stream/AgencyStream";
 import {RoutesStream} from "../stream/RoutesStream";
 import {Transform} from "stream";
+import {CalendarStream} from "../stream/CalendarStream";
+import {TripsStream} from "../stream/TripsStream";
 
 export class Converter {
 
@@ -15,7 +17,9 @@ export class Converter {
     private readonly ssim: SSIMStream,
     private readonly agency: AgencyStream,
     private readonly stops: StopsStream,
-    private readonly routes: RoutesStream
+    private readonly routes: RoutesStream,
+    private readonly calendar: CalendarStream,
+    private readonly trips: TripsStream
   ) {}
 
   /**
@@ -28,15 +32,19 @@ export class Converter {
 
     this.lines.pipe(this.ssim);
 
-    const [agency, stops, routes] = await Promise.all([
+    const [agency, stops, routes, calendar, trips] = await Promise.all([
       streamToString(this.ssim.pipe(this.agency)),
       streamToString(this.ssim.pipe(this.stops)),
       streamToString(this.ssim.pipe(this.routes)),
+      streamToString(this.ssim.pipe(this.calendar)),
+      streamToString(this.ssim.pipe(this.trips)),
     ]);
 
     this.archive.append(agency, { name: "agency.txt" });
     this.archive.append(stops, { name: "stops.txt" });
     this.archive.append(routes, { name: "routes.txt" });
+    this.archive.append(calendar, { name: "calendar.txt" });
+    this.archive.append(trips, { name: "trips.txt" });
 
     this.archive.pipe(output);
     this.archive.finalize();

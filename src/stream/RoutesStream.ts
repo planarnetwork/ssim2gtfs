@@ -1,24 +1,15 @@
-import {Transform, TransformCallback} from "stream";
 import {FlightSchedule} from "./SSIMStream";
+import {GTFSFileStream} from "./GTFSFileStream";
 
 /**
  * Extract the routes from the FlightSchedule objects
  */
-export class RoutesStream extends Transform {
+export class RoutesStream extends GTFSFileStream {
   private routesSeen: RouteIndex = {};
-  private headerSent: boolean = false;
+  protected header = "route_id,agency_id,route_short_name,route_long_name,route_type,route_text_color,route_url,route_desc";
 
-  /**
-   * Transform and emit the route if it hasn't been seen before
-   */
-  public _transform(schedule: FlightSchedule, encoding: string, callback: TransformCallback): void {
-    const routes = this.getHeader() + this.getRoute(schedule);
-
-    callback(undefined, routes);
-  }
-
-  private getRoute(schedule: FlightSchedule): string {
-    const routeId = [schedule.operator, schedule.origin, schedule.destination].join("_");
+  protected getData(schedule: FlightSchedule): string {
+    const routeId = this.getRouteId(schedule);
 
     if (this.routesSeen[routeId]) {
       return "";
@@ -29,15 +20,10 @@ export class RoutesStream extends Transform {
     return `${routeId},${schedule.operator},${routeId},${routeId},1100,,,,\n`;
   }
 
-  private getHeader(): string {
-    if (this.headerSent) {
-      return "";
-    }
-
-    this.headerSent = true;
-
-    return "route_id,agency_id,route_short_name,route_long_name,route_type,route_text_color,route_url,route_desc\n";
+  public getRouteId(schedule: FlightSchedule): string {
+    return [schedule.operator, schedule.origin, schedule.destination].join("_");
   }
+
 }
 
 interface RouteIndex {
