@@ -18,7 +18,7 @@ export class CalendarStream extends GTFSFileStream {
     }
 
     const serviceId = this.getServiceId(schedule);
-    const days = [...schedule.days].map(d => d != " " ? "1" : "0").join(",");
+    const days = schedule.days.join(",");
 
     return `${serviceId},${days},${schedule.startDate},${schedule.endDate}\n`;
   }
