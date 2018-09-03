@@ -1,6 +1,6 @@
 {
   "name": "ssim2gtfs",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "SSIM to GTFS conversion tool",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -10,7 +10,7 @@
   "scripts": {
     "start": "ts-node src/cli.ts",
     "prepublishOnly": "tsc -p ./ --outDir dist/",
-    "test": "npm run lint && mocha --compilers ts:ts-node/register 'test/**/*.spec.ts'",
+    "test": "npm run lint && mocha --require ts-node/register 'test/**/*.spec.ts'",
     "lint-raw": "tslint --project tsconfig.json",
     "lint": "npm run lint-raw -- -t stylish"
   },

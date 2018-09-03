@@ -30,7 +30,7 @@ export class CalendarStream extends GTFSFileStream {
       this.datesSeen[calendarId] = this.currentId++;
     }
 
-    return this.datesSeen[calendarId]
+    return this.datesSeen[calendarId];
   }
 
   public getCalendarId(schedule: FlightSchedule): string {

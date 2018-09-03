@@ -58,10 +58,10 @@ export class Converter {
 
 function streamToString(stream: Transform): Promise<string> {
   return new Promise<string>((resolve, reject) => {
-    let string = "";
+    let result = "";
 
-    stream.on("data", data => string += data);
-    stream.on("end", () => resolve(string));
+    stream.on("data", data => result += data);
+    stream.on("end", () => resolve(result));
     stream.on("error", reject);
   });
 }

@@ -94,6 +94,14 @@ describe("SSIMStream", () => {
   });
 
   xit("dates apply to scheduled departure time, not passenger departure time", () => {
+    const ssim = new SSIMStream({ objectMode: true });
+
+    ssim.write("3 CA  1011501J26OCT0826OCT081234567 ___22001100-08003 ___04000400+00001 738CDIJYBMHKLQGSXVUZWTE     XX                 II                                        M                              00000073", "utf8");
+
+    return awaitStream(ssim, (schedule: FlightSchedule) => {
+      chai.expect(schedule.departureTime).to.equal("22:00");
+      chai.expect(schedule.arrivalTime).to.equal("28:00");
+    });
   });
 
 });

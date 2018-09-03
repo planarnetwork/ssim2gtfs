@@ -53,8 +53,8 @@ export class SSIMStream extends Transform {
   private setSeason(season: string, year: string): void {
     const summerStartDate = this.findSunday(LocalDate.parse("20" + year + "-03-31"));
     const winterStartDate = this.findSunday(LocalDate.parse("20" + year + "-10-31"));
-    const summerStart = summerStartDate.toString().substr(8, 2)+ "MAR";
-    const winterStart = winterStartDate.toString().substr(8, 2)+ "OCT";
+    const summerStart = summerStartDate.toString().substr(8, 2) + "MAR";
+    const winterStart = winterStartDate.toString().substr(8, 2) + "OCT";
 
     if (season === Season.Summer) {
       this.firstDateOfSeason = summerStart + year;
