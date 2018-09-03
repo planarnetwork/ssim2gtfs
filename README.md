@@ -3,11 +3,9 @@ ssim2gtfs
 
 ssim2gtfs converts [IATA SSIM](https://www.iata.org/publications/store/Pages/standard-schedules-information.aspx) flight schedule data into a [GTFS](https://developers.google.com/transit/gtfs/) zip containing trips, stops, stop times and calendars.
 
-## Status
-
-In development, not currently functional.
-
 ## Usage
+
+**ssim2gtfs requires [node 10.x](https://nodejs.org) or above**
 
 ssim2gtfs is a CLI tool that can be installed via NPM:
 
