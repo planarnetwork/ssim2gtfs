@@ -70,32 +70,22 @@ describe("SSIMStream", () => {
     });
   });
 
-  xit("does not convert departure time to >24 hour clock", () => {
+  it("ensures the end of season is always after the start", () => {
     const ssim = new SSIMStream({ objectMode: true });
 
-    ssim.write("3 CA  1011501J26OCT0800XXX001234567 ___22002200-06003 __22002200-08001 738CDIJYBMHKLQGSXVUZWTE     XX                 II                                        M                              00000073", "utf8");
+    ssim.write("2LCA R0008W08 07MAY0800XXX0007MAY08OAG SSIM PRODUCT             18MAY08C                                                                                                                    EN1937000002");
+    ssim.write("3 CA  1011501J00XXX0000XXX001234567 PEK08000800+08003 HKG11251125+08001 738CDIJYBMHKLQGSXVUZWTE     XX                 II                                        M                              00000073", "utf8");
 
     return awaitStream(ssim, (schedule: FlightSchedule) => {
-      chai.expect(schedule.departureTime).to.equal("04:00");
-      chai.expect(schedule.arrivalTime).to.equal("06:00");
+      chai.expect(schedule.startDate).to.equal("2008-10-30");
+      chai.expect(schedule.endDate).to.equal("2009-03-30");
     });
   });
 
-  xit("converts arrival time to  >24 hour clock", () => {
+  it("converts arrival time to  >24 hour clock", () => {
     const ssim = new SSIMStream({ objectMode: true });
 
-    ssim.write("3 CA  1011501J26OCT0800XXX001234567 ___12001200-06003 __22002200-08001 738CDIJYBMHKLQGSXVUZWTE     XX                 II                                        M                              00000073", "utf8");
-
-    return awaitStream(ssim, (schedule: FlightSchedule) => {
-      chai.expect(schedule.departureTime).to.equal("18:00");
-      chai.expect(schedule.arrivalTime).to.equal("30:00");
-    });
-  });
-
-  xit("converts arrival time to  >24 hour clock", () => {
-    const ssim = new SSIMStream({ objectMode: true });
-
-    ssim.write("3 CA  1011501J26OCT0800XXX001234567 ___22002200+00003 __04000400+00001 738CDIJYBMHKLQGSXVUZWTE     XX                 II                                        M                              00000073", "utf8");
+    ssim.write("3 CA  1011501J26OCT0826OCT081234567 ___22002200+00003 ___04000400+00001 738CDIJYBMHKLQGSXVUZWTE     XX                 II                                        M                              00000073", "utf8");
 
     return awaitStream(ssim, (schedule: FlightSchedule) => {
       chai.expect(schedule.departureTime).to.equal("22:00");
@@ -105,6 +95,7 @@ describe("SSIMStream", () => {
 
   xit("dates apply to scheduled departure time, not passenger departure time", () => {
   });
+
 });
 
 function awaitStream<T>(stream: Transform, fn: StreamTest<T>) {

@@ -16,12 +16,8 @@ export class StopTimesStream extends GTFSFileStream {
   protected getData(schedule: FlightSchedule): string {
     const tripId = this.trips.getTripId(schedule);
 
-    return `${tripId},${schedule.departureTime},${schedule.departureTime},${schedule.origin},1,,0,1,,,,,,,\n`
-      +  `${tripId},${schedule.arrivalTime},${schedule.arrivalTime},${schedule.destination},1,,1,0,,,,,,,\n`;
+    return `${tripId},${schedule.departureTime}:00,${schedule.departureTime}:00,${schedule.origin},1,,0,1,,,,,,,\n`
+      +  `${tripId},${schedule.arrivalTime}:00,${schedule.arrivalTime}:00,${schedule.destination},1,,1,0,,,,,,,\n`;
   }
 
-}
-
-interface StopsIndex {
-  [stopId: string]: string;
 }

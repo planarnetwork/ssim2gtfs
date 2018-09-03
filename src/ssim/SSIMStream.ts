@@ -1,5 +1,5 @@
 import {Transform, TransformCallback} from "stream";
-import {DayOfWeek, LocalDate, ZonedDateTime, ZoneId} from "js-joda";
+import {DayOfWeek, Duration, LocalDate, ZonedDateTime, ZoneId} from "js-joda";
 
 /**
  * Transform the input text stream into a stream of FlightSchedules
@@ -41,32 +41,47 @@ export class SSIMStream extends Transform {
     }
   }
 
+  /**
+   * Set the first and last date of the season.
+   *
+   * For the Summer season the first date will be the last Sunday in March and the last date will be the last Sunday in
+   * October of the year given.
+   *
+   * For the Winter season the first date will be the last Sunday in October and the last date will be the last Sunday
+   * in March of the next year.
+   */
   private setSeason(season: string, year: string): void {
     const summerStartDate = this.findSunday(LocalDate.parse("20" + year + "-03-31"));
     const winterStartDate = this.findSunday(LocalDate.parse("20" + year + "-10-31"));
-    const summerStart = summerStartDate.toString().substr(8, 2)+ "MAR" + year;
-    const winterStart = winterStartDate.toString().substr(8, 2)+ "OCT" + year;
+    const summerStart = summerStartDate.toString().substr(8, 2)+ "MAR";
+    const winterStart = winterStartDate.toString().substr(8, 2)+ "OCT";
 
     if (season === Season.Summer) {
-      this.firstDateOfSeason = summerStart;
-      this.lastDateOfSeason = winterStart;
+      this.firstDateOfSeason = summerStart + year;
+      this.lastDateOfSeason = winterStart + year;
     }
     else {
-      this.firstDateOfSeason = winterStart;
-      this.lastDateOfSeason = summerStart;
+      this.firstDateOfSeason = winterStart + year;
+      this.lastDateOfSeason = summerStart + summerStartDate.plusYears(1).toString().substr(2, 2);
     }
   }
 
+  /**
+   * Recursively work backwards until we find a Sunday
+   */
   private findSunday(localDate: LocalDate): LocalDate {
     return localDate.dayOfWeek() === DayOfWeek.SUNDAY ? localDate : localDate.minusDays(1);
   }
 
+  /**
+   * Extract the schedule from the line
+   */
   private getSchedule(line: string): FlightSchedule {
     const startDateTime = this.getStartDateTime(line);
-    const startDate = startDateTime.withZoneSameInstant(ZoneId.UTC).toLocalDate().toString();
-    const endDate = this.getEndDateTime(line).withZoneSameInstant(ZoneId.UTC).toLocalDate().toString();
-    const departureTime = startDateTime.withZoneSameInstant(ZoneId.UTC).toLocalTime().toString();
-    const arrivalTime = this.getArrivalDateTime(line).withZoneSameInstant(ZoneId.UTC).toLocalTime().toString();
+    const startDate = startDateTime.withZoneSameInstant(ZoneId.UTC).toLocalDate();
+    const endDate = this.getEndDateTime(line).withZoneSameInstant(ZoneId.UTC).toLocalDate();
+    const departureTime = startDateTime.withZoneSameInstant(ZoneId.UTC).toLocalTime();
+    const arrivalTime = this.getArrivalTime(line, startDateTime);
     const days = this.getDays(line.substr(28, 7), startDateTime);
 
     return {
@@ -74,11 +89,11 @@ export class SSIMStream extends Transform {
       "flightNumber": line.substr(6, 4),
       "variation": line.substr(10, 2),
       "leg": line.substr(12, 1),
-      "startDate": startDate,
-      "endDate": endDate,
+      "startDate": startDate.toString(),
+      "endDate": endDate.toString(),
       "days": days,
       "origin": line.substr(36, 3),
-      "departureTime": departureTime,
+      "departureTime": departureTime.toString(),
       "destination": line.substr(54, 3),
       "arrivalTime": arrivalTime,
     };
@@ -98,6 +113,17 @@ export class SSIMStream extends Transform {
     return this.parseDateTime(actualEndDate, line.substr(39, 4), line.substr(47, 5));
   }
 
+  private getArrivalTime(line: string, departureTime: ZonedDateTime): string {
+    const arrivalDateTime = this.getArrivalDateTime(line).withZoneSameInstant(ZoneId.UTC);
+    const departureDate = departureTime.withZoneSameInstant(ZoneId.UTC).toLocalDate();
+    const adjustedArrivalTime = arrivalDateTime.isAfter(departureTime) ? arrivalDateTime : arrivalDateTime.plusDays(1);
+    const arrivalTime = Duration.between(departureDate.atStartOfDayWithZone(ZoneId.UTC), adjustedArrivalTime);
+    const arrivalHour = arrivalTime.toHours().toString().padStart(2, "0");
+    const arrivalMinute = (arrivalTime.toMinutes() % 60).toString().padStart(2, "0");
+
+    return arrivalHour + ":" + arrivalMinute;
+  }
+
   private getArrivalDateTime(line: string): ZonedDateTime {
     const arrivalDate = line.substr(14, 7);
     const actualArrivalDate = arrivalDate === "00XXX00" ? this.firstDateOfSeason : arrivalDate;
@@ -105,6 +131,9 @@ export class SSIMStream extends Transform {
     return this.parseDateTime(actualArrivalDate, line.substr(57, 4), line.substr(65, 5));
   }
 
+  /**
+   * Create a timezoned date
+   */
   private parseDateTime(date: string, time: string, timezone: string): ZonedDateTime {
     const day = date.substr(0, 2);
     const month = SSIMStream.MONTHS[date.substr(2, 3)];
@@ -116,6 +145,11 @@ export class SSIMStream extends Transform {
     return ZonedDateTime.parse(dateTime);
   }
 
+  /**
+   * Extract the days of the week to an array of integers [0,1,1,0,0,1,1] (0 = Monday).
+   *
+   * If the conversion from local time to UTC has affected the date perform a binary rotate to adjust the days.
+   */
   private getDays(days: string, startDate: ZonedDateTime): number[] {
     const arr = days.split("").map(day => day === " " ? 0 : 1);
     const timezoneDate = startDate.withZoneSameInstant(ZoneId.UTC).toLocalDate();
