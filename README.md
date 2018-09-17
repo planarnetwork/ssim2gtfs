@@ -1,5 +1,6 @@
 ssim2gtfs
 =========================
+[![Travis](https://img.shields.io/travis/planarnetwork/ssim2gtfs.svg?style=flat-square)](https://travis-ci.org/planarnetwork/ssim2gtfs) ![npm](https://img.shields.io/npm/v/ssim2gtfs.svg?style=flat-square)![David](https://img.shields.io/david/planarnetwork/ssim2gtfs.svg?style=flat-square)
 
 ssim2gtfs converts [IATA SSIM](https://www.iata.org/publications/store/Pages/standard-schedules-information.aspx) flight schedule data into a [GTFS](https://developers.google.com/transit/gtfs/) zip containing trips, stops, stop times and calendars.
 
@@ -39,7 +40,7 @@ The GTFS does not support many of the fields in the SSIM standard so there is a 
 Issues and PRs are very welcome. To get the project set up run
 
 ```
-git clone git@github.com:open-track/ssim2gtfs
+git clone git@github.com:planarnetwork/ssim2gtfs
 npm install --dev
 npm test
 ```

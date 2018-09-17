@@ -1,8 +1,6 @@
 import {FlightSchedule} from "../ssim/SSIMStream";
 import {GTFSFileStream} from "./GTFSFileStream";
 import {TransformOptions} from "stream";
-import {RoutesStream} from "./RoutesStream";
-import {CalendarStream} from "./CalendarStream";
 import {AirportIndex} from "../csv/AirportsCSV";
 
 /**
@@ -11,7 +9,7 @@ import {AirportIndex} from "../csv/AirportsCSV";
 export class StopsStream extends GTFSFileStream {
   private stopsSeen: StopsIndex = {};
 
-  protected header = "stop_id,stop_name,stop_desc,stop_lat,stop_lon,stop_url,location_type,parent_station";
+  protected header = "stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,stop_url,location_type,parent_station";
 
   constructor(opts: TransformOptions, private readonly airports: AirportIndex) {
     super(opts);
@@ -30,7 +28,7 @@ export class StopsStream extends GTFSFileStream {
 
     const {name, lat, lng, url} = this.airports[stopId] || { name: "", lat: "", lng: "", url: ""};
 
-    return `${stopId},${name},${stopId},${lat},${lng},${url},,1,,,,\n`;
+    return `${stopId},${stopId},${name},${stopId},${lat},${lng},${url},,1,,,,\n`;
   }
 
 }

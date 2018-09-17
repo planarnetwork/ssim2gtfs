@@ -2,7 +2,7 @@ import {Parser} from "csv-parse";
 import {ReadStream} from "fs";
 
 /**
- * Acccess to the airports CSV data
+ * Access to the airports CSV data
  */
 export class AirportsCSV {
 
