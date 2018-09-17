@@ -1,6 +1,6 @@
 ssim2gtfs
 =========================
-[![Travis](https://img.shields.io/travis/planarnetwork/ssim2gtfs.svg?style=flat-square)](https://travis-ci.org/planarnetwork/ssim2gtfs) ![npm](https://img.shields.io/npm/v/ssim2gtfs.svg?style=flat-square)![David](https://img.shields.io/david/planarnetwork/ssim2gtfs.svg?style=flat-square)
+[![Travis](https://img.shields.io/travis/planarnetwork/ssim2gtfs.svg?style=flat-square)](https://travis-ci.org/planarnetwork/ssim2gtfs) ![npm](https://img.shields.io/npm/v/ssim2gtfs.svg?style=flat-square) ![David](https://img.shields.io/david/planarnetwork/ssim2gtfs.svg?style=flat-square)
 
 ssim2gtfs converts [IATA SSIM](https://www.iata.org/publications/store/Pages/standard-schedules-information.aspx) flight schedule data into a [GTFS](https://developers.google.com/transit/gtfs/) zip containing trips, stops, stop times and calendars.
 
